@@ -24,7 +24,7 @@ contract MyTokenDemo is Context {
         _symbol = "TGC";
         _decimals = 18;
         // 初始化货币池
-        _mint(_msgSender(), 100000000 *10**_decimals);
+        _mint(_msgSender(), 100000000 * 10**_decimals);
     }
 
     // - 合约内部函数-
@@ -87,15 +87,15 @@ contract MyTokenDemo is Context {
         }
     }
 
+    function transferFrom(address _from,address _to,uint256 amount) public returns (bool) {
+        address owner = _msgSender();
+        _transfer(owner, _to, amount);
+
+        return true;
+    }
+
     /*  
-        方法
-        
-        
-        
-        
-        
-        
-        function transferFrom(address _from, address _to, uint256 _value) public returns (bool success)
+        方法        
         function approve(address _spender, uint256 _value) public returns (bool success)
         function allowance(address _owner, address _spender) public view returns (uint256 remaining)
     */
