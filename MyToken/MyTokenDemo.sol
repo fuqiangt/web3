@@ -20,8 +20,8 @@ contract MyTokenDemo is Context {
 
     // - 2.初始化-
     constructor() {
-        _name = "TangCoin";
-        _symbol = "TGC";
+        _name = "TangfqCoin";
+        _symbol = "TFQGC";
         _decimals = 18;
         // 初始化货币池
         _mint(_msgSender(), 100000000 * 10**_decimals);
