@@ -27,17 +27,7 @@ contract MyTokenDemo is Context {
         _mint(_msgSender(), 100000000 * 10**_decimals);
     }
 
-    // - 合约内部函数-
-    function _mint(address account, uint256 amount) internal {
-        require(account != address(0), "ERC20:mint to the zero address");
-        // 初始化货币数量
-        _totalSupply += amount;
-        // 给某个账号注入起始资金
-        unchecked {
-            _balances[account] += amount;
-        }
-    }
-
+ 
     // -3.取值器-
     // 返回代币的名字 name()
     function name() public view returns (string memory) {
@@ -72,13 +62,44 @@ contract MyTokenDemo is Context {
         return true;
     }
 
-    function _transfer(
-        address from,
-        address to,
-        uint256 amount
-    ) internal {
-        require(from != address(0), "ERC20:mint to the zero address");
-        require(to != address(0), "ERC20:mint to the zero address");
+    // 授权代币的转发
+    function approve(address spender, uint256 amount) public returns (bool) {
+        //银行授权给我(银行要贷款给我)
+        address owner = _msgSender();
+        //owner 是授权人
+        //spender 被授权人
+        _approve(owner, spender, amount);
+        return true;
+    }
+
+    // 返回授权代币数量
+    function allowanceOf(address owner,address spender) public view returns (uint256){
+        return _allowance[owner][spender];
+    }
+
+    function transferFrom(address _from,address _to,uint256 amount) public returns (bool) {
+        //address owner = _msgSender();
+        _transfer(_from, _to, amount);
+
+        return true;
+    }
+
+
+
+    //6.合约内部函数
+    function _mint(address account, uint256 amount) internal {
+        require(account != address(0), "ERC20:mint to the zero address");
+        // 初始化货币数量
+        _totalSupply += amount;
+        // 给某个账号注入起始资金
+        unchecked {
+            _balances[account] += amount;
+        }
+    }
+
+    function _transfer(address from,address to,uint256 amount) internal {
+        require(from != address(0), "ERC20:_transfer to the zero [from] address");
+        require(to != address(0), "ERC20:_transfer to the zero [to] address");
         uint256 fromBalance = _balances[from];
         require(fromBalance >= amount, "ERC20:amount is less than fromBalance");
         unchecked {
@@ -87,18 +108,32 @@ contract MyTokenDemo is Context {
         }
     }
 
-    function transferFrom(address _from,address _to,uint256 amount) public returns (bool) {
-        address owner = _msgSender();
-        _transfer(owner, _to, amount);
+    /*
 
-        return true;
+    合约地址：
+    0x4B04415bb6aa7Bbc6cc7F99428A8a8Aa9f19Ae78
+    0xa15540037B3976420a8e10029555972990B2Bb24   
+    0x04C8e9c3E164524AE440CAf34087DCa94D933048
+    0x47ced995b0d6d7acaab7688ffec565c708086202
+
+    _allowance存储数据结构：
+    {
+        0x4B04415bb6aa7Bbc6cc7F99428A8a8Aa9f19Ae78:{
+            0xa15540037B3976420a8e10029555972990B2Bb24:100w
+        },
+        [0x4B04415bb6aa7Bbc6cc7F99428A8a8Aa9f19Ae78][0xa15540037B3976420a8e10029555972990B2Bb24]=100w
+        0xa15540037B3976420a8e10029555972990B2Bb24:{
+            0x04C8e9c3E164524AE440CAf34087DCa94D933048:200w
+        }
+    }
+    */
+    function _approve(address owner,address spender,uint256 amount) internal  {
+        require(owner != address(0), "ERC20:_approve to the zero address");
+        require(spender != address(0), "ERC20:_approve to the zero address");
+        //执行授权
+        _allowance[owner][spender]=amount;
     }
 
-    /*  
-        方法        
-        function approve(address _spender, uint256 _value) public returns (bool success)
-        function allowance(address _owner, address _spender) public view returns (uint256 remaining)
-    */
 
     /*
         事件
